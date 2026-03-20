@@ -1,24 +1,29 @@
+```markdown
 # OCI Database Backup Report Generator
 
 [![License](https://img.shields.io/badge/License-GNU%20GPL%203.0-blue.svg)](LICENSE)
 [![Bash](https://img.shields.io/badge/Bash-4.0+-green.svg)](https://www.gnu.org/software/bash/)
 [![OCI CLI](https://img.shields.io/badge/OCI-CLI-orange.svg)](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm)
+[![Version](https://img.shields.io/badge/Version-1.1.0-purple.svg)](https://github.com/your-username/oci-db-backup-report/releases)
 
-Bash script to generate detailed reports on Oracle Cloud Infrastructure (OCI) database backups with filtering capabilities and automatic Object Storage upload.
+Bash script to generate detailed reports on Oracle Cloud Infrastructure (OCI) database backups with filtering capabilities, automatic Object Storage upload, and support for both TEXT and JSON output formats.
 
 ## 📋 Table of Contents
 
 - [Features](#-features)
+- [What's New in v1.1.0](#-whats-new-in-v110)
 - [Requirements](#-requirements)
 - [Installation](#-installation)
 - [Usage](#-usage)
 - [Parameters](#-parameters)
 - [Examples](#-examples)
 - [IAM Policies](#-iam-policies)
-- [Output](#-output)
+- [Output Formats](#-output-formats)
 - [Report Structure](#-report-structure)
+- [Integration Examples](#-integration-examples)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
+- [Changelog](#-changelog)
 - [License](#-license)
 
 ## ✨ Features
@@ -27,9 +32,26 @@ Bash script to generate detailed reports on Oracle Cloud Infrastructure (OCI) da
 - **Advanced Filtering**: Filter by time period and specific database names (single or multiple)
 - **Object Storage Integration**: Automatically save reports to OCI Object Storage
 - **Multi-Database Support**: Analyze all databases or a specific subset
-- **Formatted Output**: Readable reports with tabular formatting
+- **Dual Output Formats**: Support for both TEXT (human-readable) and JSON (machine-readable) formats
 - **Daily Granularity**: View backups with start date
 - **Complete Metadata**: Includes backup type, status, size, and database information
+- **Third-Party Integration**: JSON output for monitoring systems, APIs, and automation tools
+
+## 🆕 What's New in v1.1.0
+
+### JSON Output Support
+
+The script now supports **JSON output format** for integration with third-party applications, monitoring systems, or automation tools.
+
+#### Key Benefits
+
+| Benefit | Description |
+|---------|-------------|
+| **Machine-Readable** | Easy to parse for applications and scripts |
+| **Structured Data** | Hierarchically organized data |
+| **API-Friendly** | Compatible with REST APIs and webhooks |
+| **Monitoring Ready** | Integrates with Prometheus, Grafana, Datadog |
+| **Automation Ready** | Ideal for CI/CD pipelines and orchestration |
 
 ## 📋 Requirements
 
@@ -92,7 +114,7 @@ chmod +x oci_backup_report.sh
 ### Syntax
 
 ```bash
-./oci_backup_report.sh <COMPARTMENT_OCID> <START_DATE> <END_DATE> [DB_NAME_LIST] [BUCKET_NAME]
+./oci_backup_report.sh <COMPARTMENT_OCID> <START_DATE> <END_DATE> [DB_NAME_LIST] [BUCKET_NAME] [OUTPUT_FORMAT]
 ```
 
 ## 📊 Parameters
@@ -104,10 +126,13 @@ chmod +x oci_backup_report.sh
 | `END_DATE` | ✅ | End date of the period | `YYYY-MM-DD` (e.g., `2026-03-31`) |
 | `DB_NAME_LIST` | ❌ | List of database names (comma-separated) | `db1,db2,db3` or `''` for all |
 | `BUCKET_NAME` | ❌ | Object Storage bucket name to save the report | `my-backup-bucket` |
+| `OUTPUT_FORMAT` | ❌ | Output format | `text` (default) or `json` |
 
 ## 💡 Examples
 
-### 1. Report for All Databases
+### Text Output Examples
+
+#### 1. Report for All Databases (Text)
 
 ```bash
 ./oci_backup_report.sh \
@@ -116,7 +141,7 @@ chmod +x oci_backup_report.sh
   2026-03-31
 ```
 
-### 2. Report for a Single Database
+#### 2. Report for a Single Database (Text)
 
 ```bash
 ./oci_backup_report.sh \
@@ -126,7 +151,7 @@ chmod +x oci_backup_report.sh
   "MILK"
 ```
 
-### 3. Report for Multiple Databases
+#### 3. Report for Multiple Databases (Text)
 
 ```bash
 ./oci_backup_report.sh \
@@ -136,7 +161,7 @@ chmod +x oci_backup_report.sh
   "MILK,DORATST,PRICING"
 ```
 
-### 4. Save to Object Storage (All DBs)
+#### 4. Save Text Report to Object Storage
 
 ```bash
 ./oci_backup_report.sh \
@@ -147,7 +172,9 @@ chmod +x oci_backup_report.sh
   my-backup-reports-bucket
 ```
 
-### 5. Save to Object Storage (Specific Databases)
+### JSON Output Examples
+
+#### 5. Generate JSON Report (Console Output)
 
 ```bash
 ./oci_backup_report.sh \
@@ -155,7 +182,32 @@ chmod +x oci_backup_report.sh
   2026-03-01 \
   2026-03-31 \
   "MILK,DORATST" \
-  my-backup-reports-bucket
+  '' \
+  json
+```
+
+#### 6. Save JSON Report to Object Storage
+
+```bash
+./oci_backup_report.sh \
+  ocid1.compartment.oc1..aaaaaaaah6u76kznr7igdlquo4parzst66njfepfj3zysn3hx3xhdp77krbq \
+  2026-03-01 \
+  2026-03-31 \
+  "MILK,DORATST" \
+  my-backup-reports-bucket \
+  json
+```
+
+#### 7. JSON Output with All Databases
+
+```bash
+./oci_backup_report.sh \
+  ocid1.compartment.oc1..aaaaaaaah6u76kznr7igdlquo4parzst66njfepfj3zysn3hx3xhdp77krbq \
+  2026-03-01 \
+  2026-03-31 \
+  '' \
+  '' \
+  json
 ```
 
 ## 🔐 IAM Policies
@@ -189,22 +241,11 @@ Allow group dba-team to read buckets in compartment production
 Allow group dba-team to read tenancies in tenancy
 ```
 
-## 📤 Output
+## 📤 Output Formats
 
-### Console Output
+### Text Output (Human-Readable)
 
 ```
-Generazione Report Backup OCI...
-Compartment: ocid1.compartment.oc1..aaaaaaaah6u76kznr7igdlquo4parzst66njfepfj3zysn3hx3xhdp77krbq
-Period: 2026-03-01 to 2026-03-31
-DB Filter: MILK,DORATST
-Bucket OS: my-backup-reports-bucket
-Report File: backup_report_2026-03-01_2026-03-31.txt
-
-Retrieving database list...
-Found 2 databases matching the filter.
-Processing database 2 of 2...
-
 ================================================================================
                     OCI DATABASE BACKUP REPORT
 ================================================================================
@@ -224,22 +265,63 @@ DATE            DB_NAME               BACKUP_NAME                 TYPE          
 --------------------------------------------------------------------------------
 Total backups found: 3
 ================================================================================
+```
 
-=== UPLOAD OBJECT STORAGE ===
-Namespace OCI: my-namespace
-Uploading report...
-Report successfully saved to Object Storage!
-  Namespace: my-namespace
-  Bucket: my-backup-reports-bucket
-  Object: backup_report_2026-03-01_2026-03-31.txt
-  URL: https://objectstorage.eu-milan-1.oraclecloud.com/n/my-namespace/b/my-backup-reports-bucket/o/backup_report_2026-03-01_2026-03-31.txt
+### JSON Output (Machine-Readable)
 
-Report completed.
+```json
+{
+  "report": {
+    "metadata": {
+      "generated_at": "2026-03-20T14:30:45Z",
+      "report_type": "OCI_DATABASE_BACKUP",
+      "version": "1.0.0"
+    },
+    "filters": {
+      "compartment_ocid": "ocid1.compartment.oc1..aaaaaaaah6u76kznr7igdlquo4parzst66njfepfj3zysn3hx3xhdp77krbq",
+      "period": {
+        "start_date": "2026-03-01",
+        "end_date": "2026-03-31"
+      },
+      "database_filter": "MILK,DORATST"
+    },
+    "summary": {
+      "total_backups": 3,
+      "total_size_gb": 14056.306640625
+    },
+    "backups": [
+      {
+        "date": "2026-03-10",
+        "db_name": "MILK",
+        "backup_name": "Automatic Backup",
+        "type": "INCREMENTAL",
+        "status": "ACTIVE",
+        "size_gb": 9536.056640625
+      },
+      {
+        "date": "2026-03-15",
+        "db_name": "MILK",
+        "backup_name": "Manual Backup",
+        "type": "FULL",
+        "status": "ACTIVE",
+        "size_gb": 9540.125
+      },
+      {
+        "date": "2026-03-12",
+        "db_name": "DORATST",
+        "backup_name": "Automatic Backup",
+        "type": "FULL",
+        "status": "ACTIVE",
+        "size_gb": 4520.125
+      }
+    ]
+  }
+}
 ```
 
 ## 📄 Report Structure
 
-The generated report includes:
+### Text Report Structure
 
 1. **Header**
    - Generation date and time
@@ -258,6 +340,187 @@ The generated report includes:
 3. **Footer**
    - Total backups found
    - Summary statistics
+
+### JSON Report Structure
+
+```json
+{
+  "report": {
+    "metadata": {           // Report metadata
+      "generated_at": "",   // ISO8601 timestamp
+      "report_type": "",    // Report type identifier
+      "version": ""         // Script version
+    },
+    "filters": {            // Applied filters
+      "compartment_ocid": "",
+      "period": {
+        "start_date": "",
+        "end_date": ""
+      },
+      "database_filter": ""
+    },
+    "summary": {            // Summary statistics
+      "total_backups": 0,
+      "total_size_gb": 0
+    },
+    "backups": []           // Array of backup objects
+  }
+}
+```
+
+## 🔗 Integration Examples
+
+### Parse JSON with jq
+
+```bash
+# Get total number of backups
+./oci_backup_report.sh ... json | jq '.report.summary.total_backups'
+
+# Get all backup names
+./oci_backup_report.sh ... json | jq '.report.backups[].backup_name'
+
+# Filter by backup type
+./oci_backup_report.sh ... json | jq '.report.backups[] | select(.type == "FULL")'
+
+# Calculate total size
+./oci_backup_report.sh ... json | jq '.report.summary.total_size_gb'
+
+# Get failed backups
+./oci_backup_report.sh ... json | jq '.report.backups[] | select(.status != "ACTIVE")'
+
+# Export to CSV
+./oci_backup_report.sh ... json | jq -r '.report.backups[] | [.date, .db_name, .backup_name, .type, .status, .size_gb] | @csv'
+```
+
+### Integrate with Monitoring Systems
+
+#### Prometheus/Grafana
+
+```bash
+# Export metrics for Prometheus
+./oci_backup_report.sh ... json | jq -r '
+  "oci_backup_total_backups \(.report.summary.total_backups)",
+  "oci_backup_total_size_gb \(.report.summary.total_size_gb)",
+  (.report.backups[] | "oci_backup_size_gb{db=\"\(.db_name)\",type=\"\(.type)\"} \(.size_gb)")
+' > /var/lib/node_exporter/textfile_collector/oci_backups.prom
+```
+
+#### Datadog
+
+```bash
+# Send to Datadog API
+./oci_backup_report.sh ... json | jq '.report.summary' | \
+  curl -X POST "https://api.datadoghq.com/api/v1/series" \
+  -H "DD-API-KEY: $DD_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @-
+```
+
+### Webhook Integration
+
+```bash
+# Send report to webhook
+./oci_backup_report.sh ... json | jq '.report' | \
+  curl -X POST -H "Content-Type: application/json" \
+  -d @- https://your-webhook-endpoint.com/backups
+```
+
+### CI/CD Pipeline Integration
+
+#### GitHub Actions
+
+```yaml
+- name: Generate Backup Report
+  run: |
+    ./oci_backup_report.sh \
+      ${{ secrets.OCI_COMPARTMENT_OCID }} \
+      $(date -d "yesterday" +%Y-%m-%d) \
+      $(date -d "yesterday" +%Y-%m-%d) \
+      '' \
+      '' \
+      json > backup_report.json
+    
+- name: Upload Report Artifact
+  uses: actions/upload-artifact@v3
+  with:
+    name: backup-report
+    path: backup_report.json
+```
+
+#### Jenkins Pipeline
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Generate Backup Report') {
+            steps {
+                sh '''
+                    ./oci_backup_report.sh \
+                        ${OCI_COMPARTMENT_OCID} \
+                        $(date -d "yesterday" +%Y-%m-%d) \
+                        $(date -d "yesterday" +%Y-%m-%d) \
+                        '' \
+                        '' \
+                        json > backup_report.json
+                '''
+            }
+        }
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts artifacts: 'backup_report.json'
+            }
+        }
+    }
+}
+```
+
+### Scheduled Execution (Cron)
+
+```bash
+# Daily backup report at 8 AM
+0 8 * * * /path/to/oci_backup_report.sh \
+  ocid1.compartment.oc1..aaaaaaa... \
+  $(date -d "yesterday" +%Y-%m-%d) \
+  $(date -d "yesterday" +%Y-%m-%d) \
+  '' \
+  my-backup-bucket \
+  json >> /var/log/backup-report.log 2>&1
+
+# Weekly summary every Monday at 9 AM
+0 9 * * 1 /path/to/oci_backup_report.sh \
+  ocid1.compartment.oc1..aaaaaaa... \
+  $(date -d "last week" +%Y-%m-%d) \
+  $(date +%Y-%m-%d) \
+  '' \
+  my-backup-bucket \
+  json >> /var/log/backup-report-weekly.log 2>&1
+```
+
+### Python Integration
+
+```python
+import subprocess
+import json
+
+# Generate report
+result = subprocess.run([
+    './oci_backup_report.sh',
+    'ocid1.compartment.oc1..aaaaaaa...',
+    '2026-03-01',
+    '2026-03-31',
+    '',
+    '',
+    'json'
+], capture_output=True, text=True)
+
+# Parse JSON
+report = json.loads(result.stdout)
+
+# Process data
+for backup in report['report']['backups']:
+    print(f"{backup['db_name']}: {backup['backup_name']} ({backup['size_gb']} GB)")
+```
 
 ## 🔧 Troubleshooting
 
@@ -331,6 +594,19 @@ oci db database list --compartment-id <compartment-ocid>
 oci iam user get --user-id <your-user-ocid>
 ```
 
+### Error: "Invalid output format"
+
+**Solution**: Use only `text` or `json` as output format
+
+```bash
+# Correct usage
+./oci_backup_report.sh ... text
+./oci_backup_report.sh ... json
+
+# Incorrect usage
+./oci_backup_report.sh ... xml  # Will fail
+```
+
 ## 🤝 Contributing
 
 Contributions are welcome! Follow these steps:
@@ -347,8 +623,20 @@ Contributions are welcome! Follow these steps:
 - Maintain compatibility with Bash 4.0+
 - Document new features
 - Test with different scenarios
+- Ensure both text and JSON output work correctly
 
 ## 📝 Changelog
+
+### v1.1.0 (2026-03-25)
+- ✅ **NEW**: JSON output format support
+- ✅ **NEW**: Structured metadata in JSON reports
+- ✅ **NEW**: Summary statistics in JSON (total backups, total size)
+- ✅ **NEW**: Content-Type handling for Object Storage uploads
+- ✅ **NEW**: Integration examples for monitoring systems
+- ✅ **NEW**: CI/CD pipeline examples
+- ✅ Improved error handling for invalid output formats
+- ✅ Updated documentation with JSON examples
+- ✅ Added webhook integration examples
 
 ### v1.0.0 (2026-03-20)
 - ✅ Initial release
@@ -360,11 +648,11 @@ Contributions are welcome! Follow these steps:
 
 ## 📜 License
 
-Distributed under the GNU General Public License v3.0. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 👨‍ Authors
 
-- **Andrea Bonadonna** - *Initial work*
+- **OCI Cloud Architect** - *Initial work*
 
 ## 🙏 Acknowledgments
 
@@ -383,7 +671,9 @@ For issues, questions, or suggestions:
 - [OCI Database Service](https://docs.oracle.com/en-us/iaas/database.htm)
 - [OCI Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/managingobjects.htm)
 - [JQ Manual](https://stedolan.github.io/jq/manual/)
+- [OCI IAM Policies](https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/policygetstarted.htm)
 
 ---
 
 **Note**: This script is provided "as is" without warranties of any kind. Use it at your own risk. Always test in a development environment before using in production.
+```
