@@ -1,4 +1,3 @@
-```markdown
 # OCI Database Backup Report Generator
 
 [![License](https://img.shields.io/badge/License-GNU%20GPL%203.0-blue.svg)](LICENSE)
