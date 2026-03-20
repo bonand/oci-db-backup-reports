@@ -217,8 +217,8 @@ generate_text_report() {
         fi
         echo ""
         echo "--------------------------------------------------------------------------------"
-        echo "DATE            DB_NAME               BACKUP_NAME                 TYPE            STATUS          SIZE_GB"
-        echo "----            -------               -----------                 ----            -----           ---------"
+        echo "DATE        DB_NAME  BACKUP_NAME       TYPE         STATUS  SIZE_GB"
+        echo "----------  -------  ----------------  -----------  ------  --------------  "
         
         if [ -s "$temp_file" ]; then
             column -t -s $'\t' < "$temp_file"
