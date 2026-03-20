@@ -1,6 +1,6 @@
 # OCI Database Backup Report Generator
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-GNU%20GPL%203.0-blue.svg)](LICENSE)
 [![Bash](https://img.shields.io/badge/Bash-4.0+-green.svg)](https://www.gnu.org/software/bash/)
 [![OCI CLI](https://img.shields.io/badge/OCI-CLI-orange.svg)](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm)
 
